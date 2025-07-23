@@ -1,13 +1,11 @@
 import pygame
 import random
 
-# Cargar imágenes globales (una sola vez)
 nave_imagen = pygame.image.load('Juego/assets/imagenes/Main Ship - Base - Slight damage.png')
 meteorito_imagen = pygame.image.load('Juego/assets/imagenes/Meteor1.png')
 tierra_imagen = pygame.image.load('Juego/assets/imagenes/tierra.png')
 tierra_imagen = pygame.transform.scale(tierra_imagen, (400, 247))
 pygame.mixer.init()
-# Cargar sonidos globales
 sonido_correcto = pygame.mixer.Sound('Juego/assets/sonidos/success-340660.mp3')
 sonido_error = pygame.mixer.Sound('Juego/assets/sonidos/error-126627.mp3')
 sonido_explosion = pygame.mixer.Sound('Juego/assets/sonidos/explosion-312361.mp3')
