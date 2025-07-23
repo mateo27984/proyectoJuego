@@ -46,12 +46,12 @@ while not game_over:
                     if palabra_actual.lower() == m.palabra:
                         meteoritos.remove(m)
                         score += 10
-                        pygame.mixer.Sound('assets/sonidos/success-340660.mp3').play()
+                        pygame.mixer.Sound('Juego/assets/sonidos/success-340660.mp3').play()
                         encontrado = True
                         break
                 if not encontrado:
                     vidas -= 1
-                    pygame.mixer.Sound('assets/sonidos/error-126627.mp3').play()
+                    pygame.mixer.Sound('Juego/assets/sonidos/error-126627.mp3').play()
                 palabra_actual = ""
             elif event.unicode.isalpha():
                 palabra_actual += event.unicode
