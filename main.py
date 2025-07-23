@@ -4,26 +4,21 @@ from clases import Nave, Tierra, Meteorito
 
 pygame.init()
 
-# Pantalla
 Ancho = 800
 Alto = 600
 Ventana = pygame.display.set_mode((Ancho, Alto))
 pygame.display.set_caption("Juego")
 
-# Reloj
 reloj = pygame.time.Clock()
 FPS = 60
 
-# Colores y fuente
 BLANCO = (255, 255, 255)
 ROJO = (255, 0, 0)
 fuente = pygame.font.SysFont(None, 36)
 
-# Función para generar palabras
 def generar_palabra():
     return random.choice(["sol", "luz", "nube", "fuego", "astro", "viento", "roca", "metal"])
 
-# Objetos
 nave = Nave(Ancho, Alto)
 tierra = Tierra(Alto)
 meteoritos = []
@@ -33,7 +28,6 @@ vidas = 3
 spawn_timer = 0
 game_over = False
 
-# Bucle principal
 while not game_over:
     reloj.tick(FPS)
     Ventana.fill((30, 30, 30))
@@ -62,13 +56,11 @@ while not game_over:
             elif event.unicode.isalpha():
                 palabra_actual += event.unicode
 
-    # Spawnear meteoritos
     spawn_timer += 1
     if spawn_timer > 90:
         meteoritos.append(Meteorito(generar_palabra(), Ancho))
         spawn_timer = 0
 
-    # Dibujar meteoritos
     for m in meteoritos[:]:
         m.update()
         m.Dibujar(Ventana, fuente, BLANCO)
@@ -82,19 +74,15 @@ while not game_over:
             tierra.recibir_danio(10)
             meteoritos.remove(m)
 
-    # Dibujar nave y tierra
     nave.Dibujar(Ventana)
     tierra.Dibujar(Ventana)
 
-    # Dibujar entrada de texto
     pygame.draw.rect(Ventana, (50, 50, 50), (Ancho // 2 - 150, 60, 300, 40), border_radius=10)
     Ventana.blit(fuente.render(palabra_actual, True, BLANCO), (Ancho // 2 - 140, 65))
 
-    # Score y vidas
     Ventana.blit(fuente.render(f"Score: {score}", True, BLANCO), (10, 50))
     Ventana.blit(fuente.render(f"Vidas: {vidas}", True, BLANCO), (Ancho - 140, 50))
 
-    # Fin del juego
     if vidas <= 0 or tierra.explotado():
         game_over = True
         mensaje = "¡La Tierra fue destruida!" if tierra.explotado() else "¡Perdiste!"
