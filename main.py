@@ -1,0 +1,107 @@
+import pygame
+import random
+from clases import Nave, Tierra, Meteorito
+
+pygame.init()
+
+# Pantalla
+Ancho = 800
+Alto = 600
+Ventana = pygame.display.set_mode((Ancho, Alto))
+pygame.display.set_caption("Juego")
+
+# Reloj
+reloj = pygame.time.Clock()
+FPS = 60
+
+# Colores y fuente
+BLANCO = (255, 255, 255)
+ROJO = (255, 0, 0)
+fuente = pygame.font.SysFont(None, 36)
+
+# Función para generar palabras
+def generar_palabra():
+    return random.choice(["sol", "luz", "nube", "fuego", "astro", "viento", "roca", "metal"])
+
+# Objetos
+nave = Nave(Ancho, Alto)
+tierra = Tierra(Alto)
+meteoritos = []
+palabra_actual = ""
+score = 0
+vidas = 3
+spawn_timer = 0
+game_over = False
+
+# Bucle principal
+while not game_over:
+    reloj.tick(FPS)
+    Ventana.fill((30, 30, 30))
+    teclas = pygame.key.get_pressed()
+    nave.mover(teclas, Ancho)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_over = True
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                palabra_actual = palabra_actual[:-1]
+            elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                encontrado = False
+                for m in meteoritos:
+                    if palabra_actual.lower() == m.palabra:
+                        meteoritos.remove(m)
+                        score += 10
+                        pygame.mixer.Sound('assets/sonidos/success-340660.mp3').play()
+                        encontrado = True
+                        break
+                if not encontrado:
+                    vidas -= 1
+                    pygame.mixer.Sound('assets/sonidos/error-126627.mp3').play()
+                palabra_actual = ""
+            elif event.unicode.isalpha():
+                palabra_actual += event.unicode
+
+    # Spawnear meteoritos
+    spawn_timer += 1
+    if spawn_timer > 90:
+        meteoritos.append(Meteorito(generar_palabra(), Ancho))
+        spawn_timer = 0
+
+    # Dibujar meteoritos
+    for m in meteoritos[:]:
+        m.update()
+        m.Dibujar(Ventana, fuente, BLANCO)
+        if pygame.Rect(m.x, m.y, m.imagen.get_width(), m.imagen.get_height()).colliderect(
+            pygame.Rect(nave.x, nave.y, nave.imagen.get_width(), nave.imagen.get_height())):
+            meteoritos.remove(m)
+            vidas -= 1
+            pygame.mixer.Sound('Juego/assets/sonidos/error-126627.mp3').play()
+            continue
+        if m.y + m.imagen.get_height() >= tierra.y:
+            tierra.recibir_danio(10)
+            meteoritos.remove(m)
+
+    # Dibujar nave y tierra
+    nave.Dibujar(Ventana)
+    tierra.Dibujar(Ventana)
+
+    # Dibujar entrada de texto
+    pygame.draw.rect(Ventana, (50, 50, 50), (Ancho // 2 - 150, 60, 300, 40), border_radius=10)
+    Ventana.blit(fuente.render(palabra_actual, True, BLANCO), (Ancho // 2 - 140, 65))
+
+    # Score y vidas
+    Ventana.blit(fuente.render(f"Score: {score}", True, BLANCO), (10, 50))
+    Ventana.blit(fuente.render(f"Vidas: {vidas}", True, BLANCO), (Ancho - 140, 50))
+
+    # Fin del juego
+    if vidas <= 0 or tierra.explotado():
+        game_over = True
+        mensaje = "¡La Tierra fue destruida!" if tierra.explotado() else "¡Perdiste!"
+        Ventana.blit(fuente.render(mensaje, True, ROJO), (Ancho // 2 - 180, Alto // 2))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+
+    pygame.display.flip()
+
+pygame.quit()
