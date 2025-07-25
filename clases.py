@@ -1,17 +1,20 @@
 import pygame
 import random
-
+nave_enemiga =pygame.image.load('Juego/assets/imagenes/boss_frame_0__1_-removebg-preview.png')
+nave_enemiga=pygame.transform.scale(nave_enemiga,(300,247))
 nave_imagen = pygame.image.load('Juego/assets/imagenes/Main Ship - Base - Slight damage.png')
 meteorito_imagen = pygame.image.load('Juego/assets/imagenes/Meteor1.png')
 tierra_imagen = pygame.image.load('Juego/assets/imagenes/tierra.png')
 tierra_imagen = pygame.transform.scale(tierra_imagen, (400, 247))
 pygame.mixer.init()
-sonido_correcto = pygame.mixer.Sound('Juego/assets/sonidos/success-340660.mp3')
-sonido_error = pygame.mixer.Sound('Juego/assets/sonidos/error-126627.mp3')
-sonido_explosion = pygame.mixer.Sound('Juego/assets/sonidos/explosion-312361.mp3')
+sonidos=(pygame.mixer.Sound('Juego/assets/sonidos/success-340660.mp3'),
+pygame.mixer.Sound('Juego/assets/sonidos/error-126627.mp3'),
+ pygame.mixer.Sound('Juego/assets/sonidos/explosion-312361.mp3'),
+pygame.mixer.Sound('Juego/assets/sonidos/minifunk-67270.mp3'))
+
 
 class Tierra:
-    def __init__(self, alto):
+    def __init__(self,alto):
         self.imagen = tierra_imagen
         self.vida = 100
         self.x = 200
@@ -19,12 +22,13 @@ class Tierra:
 
     def recibir_danio(self, cantidad):
         self.vida = max(0, self.vida - cantidad)
-        sonido_explosion.play()
+        sonidos[2].play()
 
     def Dibujar(self, superficie):
-        pygame.draw.rect(superficie, (255, 0, 0), (10, 10, 200, 20))
-        pygame.draw.rect(superficie, (0, 255, 0), (10, 10, 200 * (self.vida / 100), 20))
-        superficie.blit(self.imagen, (self.x, self.y))
+     pygame.draw.rect(superficie, (255, 0, 0), (10, superficie.get_height() - 30, 200, 20))
+     pygame.draw.rect(superficie, (0, 255, 0), (10, superficie.get_height() - 30, 200 * (self.vida / 100), 20))
+
+     superficie.blit(self.imagen, (self.x, self.y))
 
     def explotado(self):
         return self.vida <= 0
@@ -60,3 +64,14 @@ class Meteorito:
         superficie.blit(self.imagen, (self.x, self.y))
         texto = fuente.render(self.palabra, True, blanco)
         superficie.blit(texto, (self.x + 10, self.y + 10))
+"""class NaveEnemiga(Tierra):
+    def __init__(self, alto):
+        super().__init__(alto)
+        self.imagen = nave_enemiga
+        self.x = 80  
+        self.y = 65
+        self.vida = 110
+    def Dibujar(self, superficie):
+        pygame.draw.rect(superficie, (255, 0, 0), (self.x, self.y - 20, 100, 10))
+        pygame.draw.rect(superficie, (0, 255, 0), (self.x, self.y - 20, 100 * (self.vida / 100), 10))
+        superficie.blit(self.imagen, (self.x, self.y))"""
